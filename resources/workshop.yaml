@@ -4,10 +4,10 @@ metadata:
   name: lab-markdown-sample
 spec:
   vendor: eduk8s.io
-  title: Markdown Sample
-  description: A sample workshop using Markdown
-  url: https://github.com/eduk8s/lab-markdown-sample
-  image: quay.io/eduk8s/lab-markdown-sample:master
+  title: Actions Testing
+  description: A sample workshop testing GitHub actions
+  url: https://github.com/grahamdumpleton/lab-actions-testing
+  image: docker.pkg.github.com/grahamdumpleton/lab-actions-testing/lab-actions-testing:latest
   duration: 15m
   session:
     budget: small
