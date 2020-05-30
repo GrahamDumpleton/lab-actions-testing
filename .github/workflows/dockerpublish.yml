@@ -25,7 +25,7 @@ jobs:
           IMAGE_REPOSITORY=`echo docker.pkg.github.com/${{ github.repository }} | tr A-Z a-z`
           IMAGE_NAME=`echo ${{ github.repository }} | sed -e 's%.*/%%' | tr A-Z a-z`
           IMAGE_VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          IMAGE_VERSION_TAGGED=`date "+%y%m%d.${GITHUB_SHA::7}"`
+          IMAGE_VERSION_TAGGED=`date "+%y%m%d.%H%M%S.${GITHUB_SHA::7}"`
 
           echo "::set-output name=IMAGE_REPOSITORY::$IMAGE_REPOSITORY"
           echo "::set-output name=IMAGE_NAME::$IMAGE_NAME"
