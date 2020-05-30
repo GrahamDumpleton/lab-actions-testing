@@ -20,7 +20,7 @@ jobs:
 
       - name: Push image
         run: |
-          IMAGE_REPOSITORY="docker.pkg.github.com/${{ github.repository }} | tr A-Z a-z"
+          IMAGE_REPOSITORY=`echo docker.pkg.github.com/${{ github.repository }} | tr A-Z a-z`
           IMAGE_NAME=`echo ${{ github.repository }} | sed -e 's%.*/%%' | tr A-Z a-z`
           IMAGE_VERSION=`date "+%y%m%d.${GITHUB_SHA::8}"`
           
