@@ -54,6 +54,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.variables.outputs.IMAGE_VERSION_TAGGED }}
-          release_name: Release ${{ steps.variables.outputs.IMAGE_VERSION_TAGGED }}
+          release_name: ${{ steps.variables.outputs.IMAGE_NAME }}:${{ steps.variables.outputs.IMAGE_VERSION_TAGGED }}
+          body: |
+              Pull image from the command line:
+              ```
+              docker pull ${{ steps.variables.outputs.IMAGE_REPOSITORY }}/${{ steps.variables.outputs.IMAGE_NAME }}:${{ steps.variables.outputs.IMAGE_VERSION_TAGGED }}
+              ```
+              Use as base image in DockerFile:
+              ```
+              FROM ${{ steps.variables.outputs.IMAGE_REPOSITORY }}/${{ steps.variables.outputs.IMAGE_NAME }}:${{ steps.variables.outputs.IMAGE_VERSION_TAGGED }}
+              ```
           draft: false
           prerelease: false
