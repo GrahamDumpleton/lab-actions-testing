@@ -23,7 +23,7 @@ jobs:
 
       - name: Push image
         run: |
-          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}
+          IMAGE_ID=`echo docker.pkg.github.com/${{ github.repository }} | tr A-Z a-z`
           VERSION=`date "+%y%m%d.${GITHUB_SHA::8}"`
           
           echo IMAGE_ID=$IMAGE_ID
