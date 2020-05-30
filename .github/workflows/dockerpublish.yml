@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - develop
 
 jobs:
   push:
@@ -22,11 +23,17 @@ jobs:
         run: |
           IMAGE_REPOSITORY=`echo docker.pkg.github.com/${{ github.repository }} | tr A-Z a-z`
           IMAGE_NAME=`echo ${{ github.repository }} | sed -e 's%.*/%%' | tr A-Z a-z`
-          IMAGE_VERSION=`date "+%y%m%d.${GITHUB_SHA::7}"`
-          
+
+          IMAGE_VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          IMAGE_VERSION_TAGGED=`date "+%y%m%d.${GITHUB_SHA::7}"`
+
           echo IMAGE_REPOSITORY=$IMAGE_REPOSITORY
           echo IMAGE_NAME=$IMAGE_NAME
+
           echo IMAGE_VERSION=$IMAGE_VERSION
+          echo IMAGE_VERSION_TAGGED=$IMAGE_VERSION_TAGGED
           
           docker tag image $IMAGE_REPOSITORY/$IMAGE_NAME:$IMAGE_VERSION
           docker push $IMAGE_REPOSITORY/$IMAGE_NAME:$IMAGE_VERSION
+          
+          [ "$VERSION" == "master" ] && docker tag image $IMAGE_REPOSITORY/$IMAGE_NAME:$IMAGE_VERSION_TAGGED && docker push $IMAGE_REPOSITORY/$IMAGE_NAME:$IMAGE_VERSION_TAGGED
