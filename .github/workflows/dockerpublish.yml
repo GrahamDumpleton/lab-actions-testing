@@ -19,30 +19,31 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
-      - name: Push branch image
+      - name: Populate variables
+        id: variables
         run: |
           IMAGE_REPOSITORY=`echo docker.pkg.github.com/${{ github.repository }} | tr A-Z a-z`
           IMAGE_NAME=`echo ${{ github.repository }} | sed -e 's%.*/%%' | tr A-Z a-z`
           IMAGE_VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          IMAGE_VERSION_TAGGED=`date "+%y%m%d.${GITHUB_SHA::7}"`
 
-          echo IMAGE_REPOSITORY=$IMAGE_REPOSITORY
-          echo IMAGE_NAME=$IMAGE_NAME
-          echo IMAGE_VERSION=$IMAGE_VERSION
-
-          docker tag image $IMAGE_REPOSITORY/$IMAGE_NAME:$IMAGE_VERSION
-          docker push $IMAGE_REPOSITORY/$IMAGE_NAME:$IMAGE_VERSION
+          echo "::set-output name=IMAGE_REPOSITORY::$IMAGE_REPOSITORY"
+          echo "::set-output name=IMAGE_NAME::$IMAGE_NAME"
+          echo "::set-output name=IMAGE_VERSION::$IMAGE_VERSION"
+          echo "::set-output name=IMAGE_VERSION_TAGGED::$IMAGE_VERSION_TAGGED"
+        
+      - name: Push branch image
+        run: |
+          IMAGE=${{ steps.variables.outputs.IMAGE_REPOSITORY }}/${{ steps.variables.outputs.IMAGE_NAME }}:${{ steps.variables.outputs.IMAGE_VERSION }}
+          
+          docker tag image $IMAGE
+          docker push $IMAGE
 
       - name: Push tagged image
         if: github.ref == 'refs/heads/master'
         run: |
-          IMAGE_REPOSITORY=`echo docker.pkg.github.com/${{ github.repository }} | tr A-Z a-z`
-          IMAGE_NAME=`echo ${{ github.repository }} | sed -e 's%.*/%%' | tr A-Z a-z`
-          IMAGE_VERSION_TAGGED=`date "+%y%m%d.${GITHUB_SHA::7}"`
-
-          echo IMAGE_REPOSITORY=$IMAGE_REPOSITORY
-          echo IMAGE_NAME=$IMAGE_NAME
-          echo IMAGE_VERSION_TAGGED=$IMAGE_VERSION_TAGGED
+          IMAGE=${{ steps.variables.outputs.IMAGE_REPOSITORY }}/${{ steps.variables.outputs.IMAGE_NAME }}:${{ steps.variables.outputs.IMAGE_VERSION_TAGGED }}
           
-          docker tag image $IMAGE_REPOSITORY/$IMAGE_NAME:$IMAGE_VERSION_TAGGED
-          docker push $IMAGE_REPOSITORY/$IMAGE_NAME:$IMAGE_VERSION_TAGGED
+          docker tag image $IMAGE
+          docker push $IMAGE
 
